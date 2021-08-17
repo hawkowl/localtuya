@@ -205,7 +205,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         self._fan_mode = None
         self._precision = self._config.get(CONF_PRECISION, DEFAULT_PRECISION)
         self._target_precision = self._config.get(CONF_TARGET_PRECISION, self._precision)
-        self._conf_fan_mode_dp = self.config.get(CONF_FAN_MODE_DP)
+        self._conf_fan_mode_dp = self._config.get(CONF_FAN_MODE_DP)
         self._conf_fan_mode_set = FAN_SETS.get(self._config.get(CONF_FAN_MODE_SET), {})
         self._conf_hvac_mode_dp = self._config.get(CONF_HVAC_MODE_DP)
         self._conf_hvac_mode_set = HVAC_MODE_SETS.get(self._config.get(CONF_HVAC_MODE_SET), {})
