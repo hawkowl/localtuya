@@ -422,9 +422,10 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
                     self._hvac_mode = HVAC_MODE_AUTO
 
         """Update the current action"""
-        for action,value in self._conf_hvac_action_set.items():
-            if self.dps_conf(CONF_HVAC_ACTION_DP) == value or self.dps_conf(CONF_HVAC_ACTION_DP) in value:
-                self._hvac_action = action
+        if self.has_config(CONF_HVAC_ACTION_DP):
+            for action,value in self._conf_hvac_action_set.items():
+                if self.dps_conf(CONF_HVAC_ACTION_DP) == value or self.dps_conf(CONF_HVAC_ACTION_DP) in value:
+                    self._hvac_action = action
 
         """Update the fan mode"""
         if self._config.get(CONF_FAN_MODE_SET) == "Breville":
