@@ -180,6 +180,7 @@ def flow_schema(dps):
         ),
         vol.Optional(CONF_EURISTIC_ACTION, default=False): bool,
         vol.Optional(CONF_FAN_MODE_DP): vol.In(dps),
+        vol.Optional(CONF_FAN_MODE_SET): vol.In(list(FAN_SETS.keys()))
     }
 
 
