@@ -127,9 +127,9 @@ PRESET_SETS = {
 
 B_FAN_MODES = {
     HVAC_MODE_HEAT: {
-        FAN_LOW: "Heat_High",
-        FAN_MEDIUM: "Heat_High",
-        FAN_HIGH: "Heat_0",
+        FAN_LOW: "heat_high",
+        FAN_MEDIUM: "heat_high",
+        FAN_HIGH: "heat_0",
     },
     HVAC_MODE_COOL: {
         FAN_LOW: "NatureWind_Low",
