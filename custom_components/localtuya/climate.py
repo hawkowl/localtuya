@@ -38,6 +38,7 @@ from homeassistant.components.climate.const import (
     FAN_LOW,
     FAN_MEDIUM,
     FAN_HIGH,
+    FAN_OFF,
 )
 from homeassistant.const import (
     ATTR_TEMPERATURE,
@@ -128,13 +129,15 @@ PRESET_SETS = {
 B_FAN_MODES = {
     HVAC_MODE_HEAT: {
         FAN_LOW: "heat_high",
-        FAN_MEDIUM: "heat_high",
         FAN_HIGH: "heat_0",
     },
     HVAC_MODE_COOL: {
         FAN_LOW: "NatureWind_Low",
         FAN_MEDIUM: "NatureWind_High",
         FAN_HIGH: "CoolWind_0",
+    },
+    HVAC_MODE_OFF: {
+        FAN_OFF: ["NatureWind_Low", "NatureWind_High", "CoolWind_0", "SleepWind"],
     }
 }
 
@@ -430,11 +433,11 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         """Update the fan mode"""
         if self._config.get(CONF_FAN_MODE_SET) == "Breville":
             for k,v in B_FAN_MODES[self._hvac_mode].items():
-                if self._hvac_mode == HVAC_MODE_COOL:
-                    if v == self.dps_conf(CONF_FAN_MODE_DP):
+                if self._hvac_mode == HVAC_MODE_HEAT:
+                    if v == self.dps_conf(CONF_HVAC_MODE_DP):
                         self._fan_mode = k
                 else:
-                    if v == self.dps_conf(CONF_HVAC_MODE_DP):
+                    if v == self.dps_conf(CONF_FAN_MODE_DP):
                         self._fan_mode = k
 
 async_setup_entry = partial(async_setup_entry, DOMAIN, LocaltuyaClimate, flow_schema)
