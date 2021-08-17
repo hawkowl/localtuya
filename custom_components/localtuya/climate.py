@@ -88,14 +88,13 @@ HVAC_MODE_SETS = {
         HVAC_MODE_HEAT: True,
     },
     "Breville": {
-        HVAC_MODE_COOL: "Cool",
-        HVAC_MODE_HEAT: "Heat",
+        HVAC_MODE_COOL: "heat_low",
+        HVAC_MODE_HEAT: ["heat_high", "heat_0"],
     }
 }
 HVAC_ACTION_SETS = {
     "Breville": {
-        CURRENT_HVAC_HEAT: "Heating",
-        CURRENT_HVAC_OFF: "Off",
+        CURRENT_HVAC_HEAT: ["heat_high", "heat_0"],
         CURRENT_HVAC_COOL: "Cooling",
     },
     "True/False": {
@@ -128,9 +127,9 @@ PRESET_SETS = {
 
 B_FAN_MODES = {
     HVAC_MODE_HEAT: {
-        FAN_LOW: "SleepWind",
-        FAN_MEDIUM: "SleepWind",
-        FAN_HIGH: "SleepWind",
+        FAN_LOW: "Heat_High",
+        FAN_MEDIUM: "Heat_High",
+        FAN_HIGH: "Heat_0",
     },
     HVAC_MODE_COOL: {
         FAN_LOW: "NatureWind_Low",
@@ -336,7 +335,10 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
     async def async_set_fan_mode(self, fan_mode):
         """Set new target fan mode."""
         if self._config.get(CONF_FAN_MODE_SET) == "Breville":
-            await self._device.set_dp(B_FAN_MODES[self._hvac_mode][fan_mode], self._conf_fan_mode_dp)
+            if self._hvac_mode == HVAC_MODE_COOL:
+                await self._device.set_dp(B_FAN_MODES[self._hvac_mode][fan_mode], self._conf_fan_mode_dp)
+            else:
+                await self._device.set_dp(B_FAN_MODES[self._hvac_mode][fan_mode], self._conf_hvac_mode_dp)
             return
 
         return NotImplementedError()
@@ -353,9 +355,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         if self._config.get(CONF_HVAC_ACTION_SET) == "Breville":
             if hvac_mode == HVAC_MODE_HEAT:
                 await self._device.set_dp("heat_high", self._conf_hvac_mode_dp)
-                await self._device.set_dp("SleepWind", self._conf_fan_mode_dp)
             elif hvac_mode == HVAC_MODE_COOL:
-                await self._device.set_dp("heat_low", self._conf_hvac_mode_dp)
                 await self._device.set_dp("NatureWind_High", self._conf_fan_mode_dp)
         else:
             await self._device.set_dp(self._conf_hvac_mode_set[hvac_mode], self._conf_hvac_mode_dp)
@@ -413,7 +413,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
                 self._hvac_mode = HVAC_MODE_OFF
             else:
                 for mode,value in self._conf_hvac_mode_set.items():
-                    if self.dps_conf(CONF_HVAC_MODE_DP) == value:
+                    if self.dps_conf(CONF_HVAC_MODE_DP) == value or self.dps_conf(CONF_HVAC_MODE_DP) in value:
                         self._hvac_mode = mode
                         break
                 else:
@@ -422,13 +422,17 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
 
         """Update the current action"""
         for action,value in self._conf_hvac_action_set.items():
-            if self.dps_conf(CONF_HVAC_ACTION_DP) == value:
+            if self.dps_conf(CONF_HVAC_ACTION_DP) == value or self.dps_conf(CONF_HVAC_ACTION_DP) in value:
                 self._hvac_action = action
 
         """Update the fan mode"""
         if self._config.get(CONF_FAN_MODE_SET) == "Breville":
             for k,v in B_FAN_MODES[self._hvac_mode].items():
-                if v == self.dps_conf(CONF_FAN_MODE_DP):
-                    self._fan_mode = k
+                if self._hvac_mode == HVAC_MODE_COOL:
+                    if v == self.dps_conf(CONF_FAN_MODE_DP):
+                        self._fan_mode = k
+                else:
+                    if v == self.dps_conf(CONF_HVAC_MODE_DP):
+                        self._fan_mode = k
 
 async_setup_entry = partial(async_setup_entry, DOMAIN, LocaltuyaClimate, flow_schema)
