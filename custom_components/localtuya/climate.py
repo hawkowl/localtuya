@@ -114,7 +114,7 @@ FAN_SETS = {
     "Breville": {
         FAN_HIGH: "High",
         FAN_MEDIUM: "Medium",
-        FAN_LOW: "Low,"
+        FAN_LOW: "Low"
     }
 }
 PRESET_SETS = {
