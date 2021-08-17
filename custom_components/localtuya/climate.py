@@ -356,7 +356,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
             await self._device.set_dp(True, self._dp_id)
             await asyncio.sleep(MODE_WAIT)
 
-        if self._config.get(CONF_HVAC_ACTION_SET) == "Breville":
+        if self._config.get(CONF_HVAC_MODE_SET) == "Breville":
             if hvac_mode == HVAC_MODE_HEAT:
                 await self._device.set_dp("heat_high", self._conf_hvac_mode_dp)
             elif hvac_mode == HVAC_MODE_COOL:
